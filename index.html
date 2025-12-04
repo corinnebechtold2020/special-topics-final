@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LSTM Sine Wave Dataset Explorer</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.12.0/dist/tf.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.24.2.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <h1>LSTM Sine Wave Dataset Explorer</h1>
+      <p class="subtitle">Visualize synthetic sine sequences, train an LSTM, and inspect predictions live.</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="card collapsible" id="archCard">
+      <button class="collapsible-btn">Network Architecture ▾</button>
+      <div class="card-body">
+        <p><strong>Input:</strong> sequence of <code>50</code> y-values shaped <code>[50, 1]</code>.</p>
+        <p><strong>Core:</strong> single LSTM layer with <code>returnSequences: false</code> (outputs vector of length <code>units</code>).</p>
+        <p><strong>Head:</strong> Dense layer mapping LSTM output vector → single scalar (prediction of next y).</p>
+        <p><strong>Loss:</strong> MSE. <strong>Optimizer:</strong> Adam.</p>
+      </div>
+    </section>
+
+    <section class="card" id="datasetCard">
+      <h2>Dataset</h2>
+      <div class="controls-grid">
+        <label>Number of samples: <input id="numSamples" type="number" value="1000" min="1"></label>
+        <label>Sequence length: <input id="seqLen" type="number" value="50" min="1"></label>
+        <label>Noise σ: <input id="noiseStd" type="number" step="0.001" value="0.05"></label>
+        <label>Seed (optional): <input id="seed" type="number"></label>
+        <label>ampMin: <input id="ampMin" type="number" step="0.1" value="0.5"></label>
+        <label>ampMax: <input id="ampMax" type="number" step="0.1" value="1.5"></label>
+        <label>freqMin: <input id="freqMin" type="number" step="0.1" value="0.5"></label>
+        <label>freqMax: <input id="freqMax" type="number" step="0.1" value="2.0"></label>
+      </div>
+      <div class="actions">
+        <button id="btnGen">Regenerate Dataset</button>
+        <span id="dsInfo"></span>
+      </div>
+    </section>
+
+    <section class="card" id="samplesCard">
+      <h2>Sample Visualization</h2>
+      <div class="controls-grid">
+        <label>Show count: <input id="showCount" type="number" min="1" max="10" value="3"></label>
+        <label>Start index: <input id="startIndex" type="number" min="0" value="0"></label>
+        <div class="sample-buttons">
+          <button id="btnRender">Render</button>
+          <button id="btnPrev">Prev</button>
+          <button id="btnNext">Next</button>
+          <button id="btnRandom">Random</button>
+        </div>
+      </div>
+      <div id="samplesPlot" class="plot"></div>
+    </section>
+
+    <section class="card" id="trainingCard">
+      <h2>Model & Training</h2>
+      <div class="controls-grid">
+        <label>LSTM units: <input id="units" type="number" value="32" min="1"></label>
+        <label>Batch size: <input id="batchSize" type="number" value="32" min="1"></label>
+        <label>Epochs: <input id="epochs" type="number" value="50" min="1"></label>
+        <label>Learning rate: <input id="learningRate" type="number" step="0.0001" value="0.001"></label>
+        <label>Validation split: <input id="valSplit" type="number" step="0.01" value="0.1" min="0" max="0.5"></label>
+      </div>
+      <div class="actions">
+        <div class="left-actions">
+          <button id="btnBuild">Build / Reset Model</button>
+          <button id="btnStart">Start Training</button>
+          <button id="btnStop">Stop Training</button>
+        </div>
+        <div class="train-status">
+          <div class="progress-wrap">
+            <div id="trainProgress" class="progress-bar"><div id="trainProgressFill" class="progress-fill" style="width:0%"></div></div>
+            <div id="epochStatus" class="epoch-status">Epoch: 0 / 0</div>
+          </div>
+          <div id="trainLog" class="log"></div>
+        </div>
+      </div>
+
+      <div class="training-charts">
+        <div id="metricsPlot" class="small-plot"></div>
+        <div id="predsPlot" class="small-plot"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
